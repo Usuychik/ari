@@ -1,0 +1,159 @@
+{
+    "type": "object",
+    "properties": {
+        "service": {"type": "string"},
+        "script": {
+            "type": "array",
+            "items": {
+                "oneOf": [
+                    {"$ref": "#/definitions/act_say"},
+                    {"$ref": "#/definitions/act_hangup"},
+                    {"$ref": "#/definitions/act_get_dtmf"},
+                    {"$ref": "#/definitions/act_recognize"},
+                    {"$ref": "#/definitions/act_say_and_recognize"},
+                    {"$ref": "#/definitions/act_dial"}
+                ]
+            }
+        },
+        "record_uri": {"type": "string"},
+        "log_uri": {"type": "string"},
+        "task_id": {"type": "string"},
+        "phone": {"type": "string"}
+    },
+    "required": [
+        "service",
+        "script",
+        "task_id",
+        "phone"
+    ],
+    "additionalProperties": false,
+    "definitions": {
+        "act_say": {
+            "properties": {
+                "step": {"type": "number"},
+                "action": {
+                    "enum": ["say"]
+                },
+                "params": {
+                    "type": "object",
+                    "properties": {
+                        "msg": {"type":"string"},
+                        "lang": {"enum":[ "ru-RU", "en-US", "tr-TR","uk-UA"]},
+                        "emotion": {"enum": ["neutral","good","evil"]},
+                        "voice": {"enum": ["omazh","jane","oksana","zahar","ermil"]}
+                    },
+                    "additionalProperties": false,
+                    "required": ["msg"]
+                }
+            },
+            "required":["step","action","params"],
+            "additionalProperties": false
+        },
+        "act_get_dtmf": {
+            "properties": {
+                "step": {"type": "number"},
+                "action": {
+                    "enum": ["get_dtmf"]
+                },
+                "params": {
+                    "type": "object",
+                    "properties": {
+                        "msg": {"type":"string"},
+                        "lang": {"enum":[ "ru-RU", "en-US", "tr-TR","uk-UA"]},
+                        "emotion": {"enum": ["neutral","good","evil"]},
+                        "voice": {"enum": ["omazh","jane","oksana","zahar","ermil"]},
+                        "actions": {
+                            "type": "array",
+                            "items": {"value":"number","goto":"number"}
+                        }
+                    }
+                }
+            },
+            "required":["step","action","params"],
+            "additionalProperties": false
+        },
+        "act_hangup": {
+            "properties": {
+                "step": {"type": "number"},
+                "action": {
+                    "enum": ["hangup"]
+                }
+            },
+            "required":["step","action"],
+            "additionalProperties": false
+        },
+        "act_recognize": {
+            "properties": {
+                "step": {"type": "number"},
+                "action": {
+                    "enum": ["recognize"]
+                },
+                "params": {
+                    "type": "object",
+                    "properties": {
+                        "topic": {
+                            "enum": ["freeform", "general", "queries", "maps", "dates", "names", "numbers", "music", "buying"]
+                        },
+                        "lang": {"enum":[ "ru-RU", "en-US", "tr-TR","uk-UA"]},
+                        "classifier": {"enum": ["confirmation", "countries", ""]},
+                        "actions": {
+                            "type": "object",
+                            "patternProperties": {
+                                "^[0-9]+$": {"type" : "number"},
+                                "^[a-z]+$": {"type" : "number"}
+                            },
+                            "additionalProperties": false
+                        }
+                    },
+                    "required":["topic"]
+                }
+            },
+            "required":["step","action","params"],
+            "additionalProperties": false
+        },
+        "act_say_and_recognize": {
+            "properties": {
+                "step": {"type": "number"},
+                "action": {
+                    "enum": ["say_and_recognize"]
+                },
+                "params": {
+                    "type": "object",
+                    "properties": {
+                        "msg": {"type":"string"},
+                        "lang": {"enum":[ "ru-RU", "en-US", "tr-TR","uk-UA"]},
+                        "emotion": {"enum": ["neutral","good","evil"]},
+                        "voice": {"enum": ["omazh","jane","oksana","zahar","ermil"]},
+                        "topic": {
+                            "enum": ["freeform", "general", "queries", "maps", "dates", "names", "numbers", "music", "buying"]
+                        },
+                        "classifier": {"enum": ["confirmation", "countries", ""]},
+                        "actions": {
+                            "type": "object",
+                            "patternProperties": {
+                                "^[0-9]+$": {"type" : "number"},
+                                "^[a-z]+$": {"type" : "number"}
+                            },
+                            "additionalProperties": false
+                        }
+                    },
+                    "required":["msg","topic"]
+                }
+            },
+            "required":["step","action","params"],
+            "additionalProperties": false
+        },
+        "act_dial": {
+            "properties": {
+                "step": {"type": "number"},
+                "action": {
+                    "enum": ["dial"]
+                },
+                "params": {"value": "string"}
+            },
+            "required":["step","action","params"],
+            "additionalProperties": false
+        }
+    }
+}
+

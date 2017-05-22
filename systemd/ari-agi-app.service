@@ -1,0 +1,15 @@
+[Unit]
+Description=ARI AGI Application
+After=network.target asterisk.service
+
+[Service]
+ExecStart=/usr/bin/ari-agi-app -c /etc/ari-app
+ExecReload=/bin/kill -HUP $MAINPID
+KillMode=process
+Restart=on-failure
+RestartPreventExitStatus=255
+Type=simple
+
+[Install]
+WantedBy=multi-user.target
+Alias=ari-agi-app.service

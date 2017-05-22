@@ -1,0 +1,48 @@
+server {                                                                                                                                                                                                       
+        listen 80 default_server;                                                                                                                                                                              
+        listen [::]:80 default_server;                                                                                                                                                                          
+
+        root /var/www/;
+
+        # Add index.php to the list if you are using PHP
+        index index.html index.htm index.nginx-debian.html;
+                                                                                                                                                                                                                  
+        server_name <server_name>;       
+                                                                                                                                                                                                                                                                                                                                                                                                                          
+        location ~* /records/(.*)\.(mp3|wav|ogg)$ {                                                                                                                                                               
+                root /var/www;                                                                                                                                                                                    
+        }                                                                                                                                                                                                         
+                                                                                                                                                                                          
+        location / {                                                                                                                                                                                              
+                proxy_set_header Host $host;                                                                                                                                                                      
+                proxy_set_header X-Real-IP  $remote_addr;                                                                                                                                                         
+                proxy_set_header X-Forwarded-For $remote_addr;                                                                                                                                                    
+                proxy_redirect off;                                                                                                                                                                              
+                proxy_buffering off;                                                                                                                                                                             
+                proxy_pass http://ari_web_app;                                                                                                                                                                   
+        }                                                                                                                                                                                                         
+        location /log {
+                proxy_set_header Host $host;
+                proxy_set_header X-Real-IP  $remote_addr;
+                proxy_set_header X-Forwarded-For $remote_addr;
+                proxy_redirect off;
+                proxy_buffering off;
+                proxy_pass http://ari_log_app;
+        }
+}
+
+upstream ari_web_app {
+    #fail_timeout=0 means we always retry an upstream even if it failed
+    # to return a good HTTP response
+
+    # TCP servers
+    server 127.0.0.1:8088 fail_timeout=0;
+  }
+upstream ari_log_app {
+    #fail_timeout=0 means we always retry an upstream even if it failed
+    # to return a good HTTP response
+
+    # TCP servers
+    server 127.0.0.1:8089 fail_timeout=0;
+  }
+ 
